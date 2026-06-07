@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+src/auth-chat.before-*.js
+firestore.before-*.rules
+index.before-*.html
+src-tauri/src/lib.before-*.rs
