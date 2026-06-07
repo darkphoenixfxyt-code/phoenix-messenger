@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="100" x2="890" y2="930" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#17111f"/>
+      <stop offset="1" stop-color="#080a0f"/>
+    </linearGradient>
+    <linearGradient id="flame" x1="330" y1="170" x2="710" y2="830" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff9a55"/>
+      <stop offset=".48" stop-color="#ff6b23"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="1024" height="1024" rx="230" fill="url(#bg)"/>
+  <circle cx="512" cy="515" r="338" fill="none" stroke="#ff6b23" stroke-opacity=".18" stroke-width="18"/>
+  <path fill="url(#flame)" filter="url(#glow)" d="M512 130c16 138-93 188-93 303 0 45 20 83 54 108-5-69 39-116 82-161 8 83 94 122 94 230 0 101-68 188-166 213-128-18-226-127-226-259 0-135 84-225 178-319 33-33 61-70 77-115Zm4 444c-61 64-89 107-89 157 0 44 31 83 76 93 57-12 98-61 98-119 0-51-28-88-57-128-8 29-19 52-28 67-4-23-4-46 0-70Z"/>
+</svg>

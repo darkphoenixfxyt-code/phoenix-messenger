@@ -1,0 +1,279 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0e0e10;
+  color: #f0f0f2;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 64px 280px 1fr;
+}
+
+.rail {
+  border-right: 1px solid #ffffff12;
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #0e0e10;
+}
+
+.rail-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #6c63ff;
+  box-shadow: 0 0 25px #6c63ff55;
+  margin-bottom: 18px;
+}
+
+.rail-btn {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.rail-btn:hover,
+.rail-btn.active {
+  background: #222228;
+}
+
+.rail-spacer {
+  flex: 1;
+}
+
+.user-avatar,
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #6c63ff33;
+  color: #8d86ff;
+  display: grid;
+  place-items: center;
+  font-weight: bold;
+}
+
+.sidebar {
+  background: #18181c;
+  border-right: 1px solid #ffffff12;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar-header h2 {
+  font-size: 17px;
+}
+
+.icon-btn,
+button {
+  border: 0;
+  border-radius: 10px;
+  background: #6c63ff;
+  color: white;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.search {
+  width: 100%;
+  margin: 14px 0;
+  padding: 11px;
+  border-radius: 11px;
+  border: 1px solid #ffffff12;
+  background: #222228;
+  color: white;
+  outline: none;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tab {
+  flex: 1;
+  background: transparent;
+  color: #9898a8;
+  padding: 8px;
+}
+
+.tab.active {
+  background: #222228;
+  color: white;
+}
+
+.empty-side,
+.empty-chat {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #9898a8;
+  gap: 10px;
+}
+
+.convo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.convo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.convo:hover,
+.convo.active {
+  background: #222228;
+}
+
+.convo p {
+  margin: 3px 0 0;
+  color: #5a5a6e;
+  font-size: 13px;
+}
+
+.chat {
+  background: #0e0e10;
+  display: flex;
+  flex-direction: column;
+}
+
+.empty-chat {
+  height: 100%;
+}
+
+.big-icon {
+  width: 78px;
+  height: 78px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  background: #6c63ff22;
+  border: 1px solid #6c63ff44;
+}
+
+.chat-header {
+  height: 68px;
+  border-bottom: 1px solid #ffffff12;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+}
+
+.chat-header h3,
+.chat-header p {
+  margin: 0;
+}
+
+.chat-header p {
+  color: #22c55e;
+  font-size: 12px;
+}
+
+.messages {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.msg {
+  max-width: 480px;
+  width: fit-content;
+  padding: 11px 15px;
+  border-radius: 18px;
+  margin-bottom: 8px;
+  background: #222228;
+}
+
+.msg.mine {
+  margin-left: auto;
+  background: #6c63ff;
+}
+
+.input-area {
+  border-top: 1px solid #ffffff12;
+  padding: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.input-area input {
+  flex: 1;
+  padding: 13px;
+  border-radius: 14px;
+  border: 1px solid #ffffff12;
+  background: #222228;
+  color: white;
+  outline: none;
+}
+
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: #000000aa;
+  display: grid;
+  place-items: center;
+}
+
+.modal {
+  width: 400px;
+  background: #18181c;
+  border: 1px solid #ffffff22;
+  border-radius: 18px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal input {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ffffff22;
+  background: #222228;
+  color: white;
+  outline: none;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid #ffffff22;
+}

@@ -1,0 +1,193 @@
+.friends-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-primary, #fff);
+}
+
+.friends-tabs {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  overflow-x: auto;
+}
+
+.friends-tabs .tab {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #6b7280);
+  cursor: pointer;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.friends-tabs .tab.active {
+  color: var(--text-primary, #000);
+  border-bottom-color: var(--primary, #3b82f6);
+}
+
+.friends-tabs .tab:hover {
+  color: var(--text-primary, #000);
+}
+
+.friends-list,
+.friend-requests,
+.friend-search {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary, #6b7280);
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state p {
+  max-width: 200px;
+}
+
+.friend-item,
+.request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  transition: background 0.2s;
+}
+
+.friend-item:hover,
+.request-item:hover {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+.friend-info,
+.request-info {
+  flex: 1;
+}
+
+.friend-name,
+.request-name {
+  font-weight: 600;
+  color: var(--text-primary, #000);
+  margin-bottom: 0.25rem;
+}
+
+.friend-meta,
+.request-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+}
+
+.friend-actions,
+.request-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.action-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border, #d1d5db);
+  background: var(--bg-secondary, #f3f4f6);
+  color: var(--text-primary, #000);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background: var(--bg-tertiary, #e5e7eb);
+}
+
+.action-btn.primary {
+  background: var(--primary, #3b82f6);
+  color: white;
+  border-color: var(--primary, #3b82f6);
+}
+
+.action-btn.primary:hover {
+  background: var(--primary-dark, #2563eb);
+}
+
+.action-btn.danger {
+  color: #ef4444;
+  border-color: #fca5a5;
+}
+
+.action-btn.danger:hover {
+  background: #fee2e2;
+}
+
+.action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.friend-search {
+  padding: 1rem;
+}
+
+.search-box {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border, #e5e7eb);
+  transition: background 0.2s;
+}
+
+.user-item:hover {
+  background: var(--bg-secondary, #f9fafb);
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-weight: 600;
+  color: var(--text-primary, #000);
+  margin-bottom: 0.25rem;
+}
+
+.user-bio {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #6b7280);
+  margin-top: 0.25rem;
+}

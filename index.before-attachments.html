@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phoenix Messenger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e10;
+    --bg2: #18181c;
+    --bg3: #222228;
+    --bg4: #2c2c35;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f2;
+    --text2: #9898a8;
+    --text3: #5a5a6e;
+    --accent: #6c63ff;
+    --accent2: #4f46e5;
+    --accent-glow: rgba(108,99,255,0.22);
+    --green: #22c55e;
+    --font: 'DM Sans', sans-serif;
+  }
+
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font); }
+
+  .app { display: grid; grid-template-columns: 64px 280px 1fr; height: 100vh; }
+
+  /* RAIL */
+  .rail {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 20px 0; gap: 4px;
+    border-right: 1px solid var(--border);
+  }
+  .rail-logo {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px; cursor: pointer;
+    box-shadow: 0 0 24px var(--accent-glow);
+  }
+  .rail-logo svg { width: 20px; height: 20px; fill: white; }
+  .rail-btn {
+    width: 40px; height: 40px; border-radius: 10px; border: none;
+    background: transparent; color: var(--text3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .rail-btn:hover { background: var(--bg3); color: var(--text2); }
+  .rail-btn.active { background: var(--bg3); color: var(--accent); }
+  .rail-spacer { flex: 1; }
+  .user-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(108,99,255,0.15); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 2px solid rgba(108,99,255,0.3); margin-top: 8px;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    display: flex; flex-direction: column;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .sidebar-header {
+    padding: 20px 16px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .sidebar-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+  .icon-btn {
+    width: 30px; height: 30px; border-radius: 8px; border: none;
+    background: var(--bg3); color: var(--text2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .icon-btn:hover { background: var(--bg4); color: var(--text); }
+
+  .search-wrap { padding: 0 12px 14px; }
+  .search-wrap-inner { position: relative; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); pointer-events: none; }
+  .search-input {
+    width: 100%; padding: 8px 12px 8px 32px; border-radius: 10px;
+    background: var(--bg3); border: 1px solid var(--border); color: var(--text);
+    font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.15s;
+  }
+  .search-input::placeholder { color: var(--text3); }
+  .search-input:focus { border-color: rgba(108,99,255,0.5); }
+
+  .tabs { display: flex; padding: 0 12px 10px; gap: 4px; }
+  .tab {
+    flex: 1; padding: 6px; border-radius: 8px; border: none;
+    background: transparent; color: var(--text3); font-family: var(--font);
+    font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  }
+  .tab:hover { color: var(--text2); background: var(--bg3); }
+  .tab.active { background: var(--bg3); color: var(--text); }
+
+  /* EMPTY SIDEBAR STATE */
+  .sidebar-empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 24px; gap: 12px; text-align: center;
+  }
+  .sidebar-empty-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    background: var(--bg3); display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+  }
+  .sidebar-empty h3 { font-size: 14px; font-weight: 500; color: var(--text2); }
+  .sidebar-empty p { font-size: 12px; color: var(--text3); line-height: 1.5; max-width: 180px; }
+  .new-chat-btn {
+    margin-top: 4px; padding: 8px 18px; border-radius: 10px; border: none;
+    background: var(--accent); color: white; font-family: var(--font);
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 4px 14px var(--accent-glow);
+  }
+  .new-chat-btn:hover { background: var(--accent2); transform: translateY(-1px); }
+
+  /* CHAT AREA */
+  .chat { display: flex; flex-direction: column; overflow: hidden; }
+
+  /* EMPTY CHAT STATE */
+  .chat-empty {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 16px; padding: 40px;
+    text-align: center;
+  }
+  .chat-empty-icon {
+    width: 72px; height: 72px; border-radius: 22px;
+    background: rgba(108,99,255,0.1); border: 1px solid rgba(108,99,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+  }
+  .chat-empty h2 {
+    font-size: 20px; font-weight: 600; letter-spacing: -0.4px;
+    color: var(--text);
+  }
+  .chat-empty p { font-size: 14px; color: var(--text3); line-height: 1.6; max-width: 300px; }
+  .chat-empty-actions { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
+  .action-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: 12px;
+    border: 1px solid var(--border2); background: var(--bg3);
+    color: var(--text2); font-family: var(--font); font-size: 13px;
+    cursor: pointer; transition: all 0.15s; font-weight: 500;
+  }
+  .action-chip:hover { background: var(--bg4); color: var(--text); border-color: rgba(108,99,255,0.3); }
+  .action-chip svg { flex-shrink: 0; }
+
+  /* NEW CHAT MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.6); align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border: 1px solid var(--border2); border-radius: 16px;
+    width: 400px; max-width: 90vw; padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+    animation: popIn 0.18s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .modal-header { display: flex; align-items: center; justify-content: space-between; }
+  .modal-title { font-size: 16px; font-weight: 600; }
+  .modal-close { background: none; border: none; color: var(--text3); cursor: pointer; padding: 4px; border-radius: 6px; transition: color 0.1s; }
+  .modal-close:hover { color: var(--text); }
+  .modal-input {
+    width: 100%; padding: 10px 14px; border-radius: 10px;
+    background: var(--bg3); border: 1px solid var(--border2);
+    color: var(--text); font-family: var(--font); font-size: 14px; outline: none;
+    transition: border-color 0.15s;
+  }
+  .modal-input:focus { border-color: rgba(108,99,255,0.5); }
+  .modal-input::placeholder { color: var(--text3); }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 8px; }
+  .btn-ghost {
+    padding: 8px 16px; border-radius: 9px; border: 1px solid var(--border2);
+    background: transparent; color: var(--text2); font-family: var(--font);
+    font-size: 13px; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+  .btn-primary {
+    padding: 8px 16px; border-radius: 9px; border: none;
+    background: var(--accent); color: white; font-family: var(--font);
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary:hover { background: var(--accent2); }
+
+  /* ACTIVE CHAT VIEW */
+  .chat-header {
+    padding: 14px 20px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+    display: none;
+  }
+  .chat-header.visible { display: flex; }
+  .chat-user-name { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; }
+  .chat-user-status { font-size: 12px; color: var(--text3); margin-top: 1px; }
+  .chat-actions { display: flex; gap: 4px; margin-left: auto; }
+  .call-bar {
+    display: none; align-items: center; gap: 14px;
+    margin: 14px auto 0; padding: 12px 14px 12px 16px;
+    width: min(520px, calc(100% - 40px)); border: 1px solid var(--border2);
+    border-radius: 14px; background: rgba(24,24,28,0.96);
+    color: var(--text2); font-size: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.32);
+  }
+  .call-bar.visible { display: flex; }
+  .call-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(108,99,255,0.15); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .call-info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .call-title { color: var(--text); font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .call-status-line { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .call-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 12px rgba(34,197,94,0.5); flex-shrink: 0;
+  }
+  .call-controls { display: flex; gap: 8px; align-items: center; }
+  .call-control {
+    width: 34px; height: 34px; border-radius: 50%; border: none;
+    background: var(--bg3); color: var(--text2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .call-control:hover { background: var(--bg4); color: var(--text); }
+  .call-control.call-end { background: #ef4444; color: white; }
+  .call-control.call-end:hover { background: #dc2626; }
+  .call-end { background: rgba(239,68,68,0.16); color: #ef4444; }
+  .call-end:hover { background: rgba(239,68,68,0.25); color: #fff; }
+  .incoming-call {
+    position: fixed; right: 20px; top: 20px; z-index: 220;
+    width: 300px; max-width: calc(100vw - 40px); display: none;
+    border: 1px solid var(--border2); border-radius: 14px; background: var(--bg2);
+    padding: 16px; box-shadow: 0 18px 50px rgba(0,0,0,0.36);
+  }
+  .incoming-call.visible { display: block; }
+  .incoming-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .incoming-subtitle { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+  .incoming-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+  .messages {
+    flex: 1; overflow-y: auto; padding: 24px 20px;
+    display: none; flex-direction: column; gap: 4px;
+  }
+  .messages.visible { display: flex; }
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+  .msg-row { display: flex; align-items: flex-end; gap: 8px; animation: fadeUp 0.18s ease; }
+  .msg-row.mine { flex-direction: row-reverse; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+  .msg-avatar-sm {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; margin-bottom: 2px;
+  }
+  .bubble {
+    max-width: 480px; padding: 9px 13px; border-radius: 16px;
+    font-size: 14px; line-height: 1.5; word-break: break-word;
+  }
+  .bubble.theirs { background: var(--bg3); color: var(--text); border-bottom-left-radius: 4px; }
+  .bubble.mine { background: var(--accent); color: white; border-bottom-right-radius: 4px; }
+  .msg-stack { display: flex; flex-direction: column; gap: 4px; max-width: 520px; }
+  .msg-row.mine .msg-stack { align-items: flex-end; }
+  .msg-meta { font-size: 10px; color: var(--text3); padding: 0 4px; }
+  .msg-tools { display: flex; gap: 4px; padding: 0 4px; opacity: 0; transition: opacity 0.12s; }
+  .msg-row:hover .msg-tools { opacity: 1; }
+  .msg-tool {
+    border: 1px solid var(--border); background: var(--bg3); color: var(--text2);
+    border-radius: 7px; padding: 3px 6px; font-family: var(--font); font-size: 11px;
+    cursor: pointer;
+  }
+  .msg-tool:hover { color: var(--text); border-color: var(--border2); }
+  .reactions { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 4px; }
+  .reaction-pill {
+    border: 1px solid var(--border); background: var(--bg2); color: var(--text2);
+    border-radius: 999px; padding: 2px 6px; font-size: 11px;
+  }
+  .typing-indicator {
+    display: none; padding: 0 20px 8px; color: var(--text3); font-size: 12px;
+  }
+  .typing-indicator.visible { display: block; }
+
+  .input-area {
+    padding: 12px 20px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+    display: none;
+  }
+  .input-area.visible { display: block; }
+  .input-toolbar { display: flex; gap: 2px; margin-bottom: 8px; }
+  .toolbar-btn {
+    padding: 5px 8px; border-radius: 6px; border: none;
+    background: transparent; color: var(--text3); cursor: pointer; transition: all 0.1s;
+  }
+  .toolbar-btn:hover { background: var(--bg3); color: var(--text2); }
+  .input-row { display: flex; align-items: flex-end; gap: 8px; }
+  .input-box {
+    flex: 1; min-height: 42px; max-height: 120px; padding: 10px 14px;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text); font-family: var(--font); font-size: 14px;
+    outline: none; resize: none; line-height: 1.5; overflow-y: auto;
+    transition: border-color 0.15s;
+  }
+  .input-box:focus { border-color: var(--border2); }
+  .input-box:empty::before { content: attr(data-placeholder); color: var(--text3); pointer-events: none; }
+  .send-btn {
+    width: 42px; height: 42px; border-radius: 12px; border: none;
+    background: var(--accent); color: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
+    box-shadow: 0 4px 12px var(--accent-glow);
+  }
+  .send-btn:hover { background: var(--accent2); transform: scale(1.04); }
+
+  /* CONVO LIST items (populated dynamically) */
+  .convo-list { flex: 1; overflow-y: auto; padding: 4px 8px; }
+  .convo-list::-webkit-scrollbar { width: 4px; }
+  .convo-list::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+  .convo-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 8px; border-radius: 12px; cursor: pointer;
+    transition: background 0.1s; position: relative;
+  }
+  .convo-item:hover { background: var(--bg3); }
+  .convo-item.active { background: var(--bg3); }
+  .convo-item.active::before {
+    content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 60%; background: var(--accent); border-radius: 0 2px 2px 0;
+  }
+  .c-avatar {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+  }
+  .convo-info { flex: 1; min-width: 0; }
+  .convo-name { font-size: 13.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .convo-preview { font-size: 12px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+
+  .auth-overlay {
+    position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+    background: var(--bg); padding: 24px;
+  }
+  .auth-overlay.hidden { display: none; }
+  .auth-panel {
+    width: 380px; max-width: 92vw; border: 1px solid var(--border2); border-radius: 16px;
+    background: var(--bg2); padding: 24px; display: flex; flex-direction: column; gap: 14px;
+  }
+  .auth-title { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+  .auth-subtitle { color: var(--text3); font-size: 13px; line-height: 1.5; }
+  .auth-row { display: flex; gap: 8px; }
+  .auth-error { min-height: 18px; color: #ef4444; font-size: 12px; }
+  .app.auth-locked { display: none; }
+  .setup-overlay {
+    position: fixed; inset: 0; z-index: 210; display: none; align-items: center; justify-content: center;
+    background: var(--bg); padding: 24px;
+  }
+  .setup-overlay.open { display: flex; }
+</style>
+</head>
+<body>
+
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-panel">
+    <div>
+      <div class="auth-title">Phoenix Messenger</div>
+      <div class="auth-subtitle">Sign in to open your chats, rooms, and profile.</div>
+    </div>
+    <input class="modal-input" id="authEmail" type="email" placeholder="Email">
+    <input class="modal-input" id="authPassword" type="password" placeholder="Password">
+    <div class="auth-row">
+      <button class="btn-primary" id="emailLoginBtn" type="button">Log in</button>
+      <button class="btn-ghost" id="emailSignupBtn" type="button">Create account</button>
+    </div>
+    <button class="btn-primary" id="googleLoginBtn" type="button">Continue with Google</button>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<div class="setup-overlay" id="usernameSetupOverlay">
+  <div class="auth-panel">
+    <div>
+      <div class="auth-title">Choose your username</div>
+      <div class="auth-subtitle">This is how people will find you in Phoenix Messenger.</div>
+    </div>
+    <input class="modal-input" id="setupUsernameInput" type="text" placeholder="Username">
+    <button class="btn-primary" id="saveUsernameBtn" type="button">Continue</button>
+    <div class="auth-error" id="setupError"></div>
+  </div>
+</div>
+
+<div class="app auth-locked" id="appShell">
+
+  <!-- RAIL -->
+  <nav class="rail">
+    <div class="rail-logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.913 1.408 5.517 3.605 7.227L4.5 22l3.985-1.99A10.82 10.82 0 0012 20.486c5.523 0 10-4.145 10-9.243S17.523 2 12 2z"/></svg>
+    </div>
+    <button class="rail-btn active" title="Messages">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button class="rail-btn" title="Calls">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.72 12a19.79 19.79 0 0 1-3-8.59A2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    </button>
+    <button class="rail-btn" title="Contacts">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    </button>
+    <button class="rail-btn" title="Saved">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <div class="rail-spacer"></div>
+    <button class="rail-btn" title="Settings" onclick="openProfileModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+    <button class="rail-btn" title="Logout" onclick="signOutUser()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+    </button>
+    <div class="user-avatar" id="userAvatar" title="Current user" onclick="openProfileModal()">A</div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Messages</span>
+      <div style="display:flex;gap:4px;">
+        <button class="icon-btn" title="New message" onclick="openModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="icon-btn" title="New room" onclick="openRoomModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 7h18"/><path d="M3 12h18"/><path d="M3 17h18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-wrap-inner">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" type="text" placeholder="Search…" id="searchInput" oninput="filterConvos()">
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="setTab(this,'all')">All</button>
+      <button class="tab" onclick="setTab(this,'dms')">DMs</button>
+      <button class="tab" onclick="setTab(this,'rooms')">Rooms</button>
+    </div>
+
+    <!-- Dynamic list -->
+    <div class="convo-list" id="convoList"></div>
+
+    <!-- Empty state (shown when no convos) -->
+    <div class="sidebar-empty" id="sidebarEmpty">
+      <div class="sidebar-empty-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5a5a6e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <h3>No conversations yet</h3>
+      <p>Start a new chat to connect with someone</p>
+      <button class="new-chat-btn" onclick="openModal()">+ New message</button>
+    </div>
+  </aside>
+
+  <!-- CHAT PANEL -->
+  <section class="chat">
+
+    <!-- Active chat header (hidden until a convo is selected) -->
+    <div class="chat-header" id="chatHeader">
+      <div class="c-avatar" id="headerAvatar" style="width:38px;height:38px;font-size:13px;"></div>
+      <div>
+        <div class="chat-user-name" id="headerName"></div>
+        <div class="chat-user-status" id="headerStatus"></div>
+      </div>
+      <div class="chat-actions">
+        <button class="icon-btn" id="voiceCallBtn" title="Voice call" onclick="startVoiceCall()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.72 12a19.79 19.79 0 0 1-3-8.59A2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </button>
+        <button class="icon-btn" id="videoCallBtn" title="Video call" onclick="startVideoCall()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </button>
+        <button class="icon-btn" id="muteCallBtn" title="Mute microphone" onclick="toggleMute()" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <button class="icon-btn" id="cameraCallBtn" title="Camera on/off" onclick="toggleCamera()" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </button>
+        <button class="icon-btn call-end" id="endCallBtn" title="End call" onclick="endCurrentCall()" style="display:none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.68 13.31a16 16 0 0 0 2.64 0"/><path d="M5.6 10.2c4.27-2.93 8.53-2.93 12.8 0"/><path d="M4.3 14.1l2.1-2.1a2 2 0 0 1 2.2-.42l1.18.5"/><path d="M19.7 14.1l-2.1-2.1a2 2 0 0 0-2.2-.42l-1.18.5"/></svg>
+        </button>
+        <button class="icon-btn" title="More">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="call-bar" id="callBar">
+      <div class="call-avatar" id="callAvatar">P</div>
+      <div class="call-info">
+        <div class="call-title" id="callTitle">Voice call</div>
+        <div class="call-status-line">
+          <span class="call-dot"></span>
+          <span id="callStatusText">Calling...</span>
+          <span>·</span>
+          <span id="callModeText">Voice</span>
+        </div>
+      </div>
+      <div class="call-controls">
+        <button class="call-control" id="callBarMuteBtn" title="Mute microphone" onclick="toggleMute()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <button class="call-control" id="callBarCameraBtn" title="Camera on/off" onclick="toggleCamera()" style="display:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+        </button>
+        <button class="call-control call-end" id="callBarEndBtn" title="End call" onclick="endCurrentCall()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.7"><path d="M5.6 10.2c4.27-2.93 8.53-2.93 12.8 0"/><path d="M4.3 14.1l2.1-2.1a2 2 0 0 1 2.2-.42l1.18.5"/><path d="M19.7 14.1l-2.1-2.1a2 2 0 0 0-2.2-.42l-1.18.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+
+    <div class="typing-indicator" id="typingIndicator"></div>
+
+    <div class="input-area" id="inputArea">
+      <div class="input-toolbar">
+        <button class="toolbar-btn" title="Attach">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <button class="toolbar-btn" title="Image">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+        <button class="toolbar-btn" title="Emoji">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 13s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        </button>
+      </div>
+      <div class="input-row">
+        <div class="input-box" id="inputBox" contenteditable="true" data-placeholder="Type a message…" role="textbox" aria-multiline="true"></div>
+        <button class="send-btn" onclick="sendMessage()" title="Send">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty chat state (no convo selected) -->
+    <div class="chat-empty" id="chatEmpty">
+      <div class="chat-empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#6c63ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.913 1.408 5.517 3.605 7.227L4.5 22l3.985-1.99A10.82 10.82 0 0012 20.486c5.523 0 10-4.145 10-9.243S17.523 2 12 2z"/></svg>
+      </div>
+      <h2>Welcome to Phoenix Messenger</h2>
+      <p>Your messages live here. Start a conversation or search for someone to chat with.</p>
+      <div class="chat-empty-actions">
+        <button class="action-chip" onclick="openModal()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New message
+        </button>
+        <button class="action-chip">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Find contacts
+        </button>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div class="modal-overlay" id="roomModalOverlay" onclick="closeRoomModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New room</span>
+      <button class="modal-close" onclick="closeRoomModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input class="modal-input" id="roomNameInput" type="text" placeholder="Room name">
+    <input class="modal-input" id="roomDescriptionInput" type="text" placeholder="Description">
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeRoomModal()">Cancel</button>
+      <button class="btn-primary" onclick="createRoom()">Create room</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="profileModalOverlay" onclick="closeProfileModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Profile settings</span>
+      <button class="modal-close" onclick="closeProfileModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input class="modal-input" id="profileUsernameInput" type="text" placeholder="Username">
+    <input class="modal-input" id="profileDisplayNameInput" type="text" placeholder="Display name">
+    <input class="modal-input" id="profileBioInput" type="text" placeholder="Bio">
+    <select class="modal-input" id="profileStatusInput">
+      <option value="online">Online</option>
+      <option value="idle">Idle</option>
+      <option value="offline">Offline</option>
+    </select>
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="signOutUser()">Sign out</button>
+      <button class="btn-primary" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW CHAT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">New message</span>
+      <button class="modal-close" onclick="closeModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <input class="modal-input" id="recipientInput" type="text" placeholder="Name or username…" autofocus>
+    <input class="modal-input" id="firstMessageInput" type="text" placeholder="Say something…">
+    <div class="modal-footer">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="startChat()">Start chat</button>
+    </div>
+  </div>
+</div>
+
+<div class="incoming-call" id="incomingCallPopup">
+  <div class="incoming-title" id="incomingCallTitle">Incoming call</div>
+  <div class="incoming-subtitle" id="incomingCallSubtitle">Voice call</div>
+  <div class="incoming-actions">
+    <button class="btn-ghost" onclick="declineIncomingCall()">Decline</button>
+    <button class="btn-primary" onclick="acceptIncomingCall()">Accept</button>
+  </div>
+</div>
+
+<audio id="remoteAudio" autoplay playsinline></audio>
+
+<script type="module" src="/src/auth-chat.js"></script>
+<script type="application/json" id="disabled-pre-auth-script">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js';
+  import {
+    addDoc,
+    collection,
+    doc,
+    getDocs,
+    getFirestore,
+    limit,
+    onSnapshot,
+    orderBy,
+    query,
+    serverTimestamp,
+    setDoc,
+    updateDoc
+  } from 'https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBYvXcMTmR35ztAvSm-7oWak_hia0G92fM",
+    authDomain: "phoenix-messenger-c2f5f.firebaseapp.com",
+    projectId: "phoenix-messenger-c2f5f",
+    storageBucket: "phoenix-messenger-c2f5f.firebasestorage.app",
+    messagingSenderId: "845033715931",
+    appId: "1:845033715931:web:1818da261417468a2934fe",
+    measurementId: "G-44XEWYVYJX"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const username = getUsername();
+  const conversationsRef = collection(db, 'conversations');
+  const messageUnsubs = new Map();
+
+  const COLORS = [
+    {bg:'rgba(108,99,255,0.15)',fg:'#6c63ff'},
+    {bg:'rgba(34,197,94,0.15)',fg:'#22c55e'},
+    {bg:'rgba(245,158,11,0.15)',fg:'#f59e0b'},
+    {bg:'rgba(239,68,68,0.15)',fg:'#ef4444'},
+    {bg:'rgba(20,184,166,0.15)',fg:'#14b8a6'},
+    {bg:'rgba(168,85,247,0.15)',fg:'#a855f7'},
+    {bg:'rgba(59,130,246,0.15)',fg:'#3b82f6'},
+  ];
+
+  let convos = [];
+  let activeId = null;
+
+  function getUsername() {
+    const key = 'phoenix_username';
+    let saved = localStorage.getItem(key);
+    while (!saved || !saved.trim()) {
+      saved = prompt('Choose a username for Phoenix Messenger');
+      if (saved === null) saved = `guest-${Math.floor(Math.random() * 10000)}`;
+    }
+    saved = saved.trim();
+    localStorage.setItem(key, saved);
+    return saved;
+  }
+
+  function updateCurrentUserUi() {
+    const avatar = document.getElementById('userAvatar');
+    if (!avatar) return;
+    avatar.textContent = getInitials(username);
+    avatar.title = username;
+    const col = getColor(username);
+    avatar.style.background = col.bg;
+    avatar.style.color = col.fg;
+    avatar.style.borderColor = col.fg;
+  }
+
+  function sameName(a, b) {
+    return String(a || '').toLowerCase() === String(b || '').toLowerCase();
+  }
+
+  function uniqueMembers(names) {
+    return names
+      .map(name => String(name || '').trim())
+      .filter(Boolean)
+      .filter((name, index, all) => all.findIndex(other => sameName(other, name)) === index);
+  }
+
+  function getConversationDisplayName(data) {
+    const members = Array.isArray(data.members) ? data.members : [];
+    if (data.type === 'dm' && members.length) {
+      return members.find(member => !sameName(member, username)) || data.name || 'Direct message';
+    }
+    return data.name || 'Unknown';
+  }
+
+  function normalizeMessage(data) {
+    return {
+      id: data.id,
+      text: data.text || '',
+      mine: sameName(data.sender, username) || data.senderId === localStorage.getItem('phoenixMessengerClientId'),
+      sender: data.sender || data.senderId || '',
+      createdAt: data.createdAt || null
+    };
+  }
+
+  function upsertLocalConvo(convo) {
+    const idx = convos.findIndex(c => c.id === convo.id);
+    if (idx === -1) {
+      convos.unshift(convo);
+      return convo;
+    }
+    convos[idx] = { ...convos[idx], ...convo, messages: convos[idx].messages || convo.messages || [] };
+    return convos[idx];
+  }
+
+  function renderActiveConvoMessages() {
+    if (!activeId) return;
+    const c = convos.find(x => x.id === activeId);
+    if (!c) return;
+    const msgs = document.getElementById('messages');
+    if (!msgs) return;
+    if (!msgs.classList.contains('visible')) return;
+    msgs.innerHTML = '';
+    c.messages.forEach(m => appendBubble(m.text, m.mine, c, false));
+    msgs.scrollTop = msgs.scrollHeight;
+    renderSidebar();
+  }
+
+  function subscribeMessages(convoId) {
+    if (messageUnsubs.has(convoId)) return;
+    const messagesRef = collection(db, 'conversations', String(convoId), 'messages');
+    const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'), limit(200));
+    const unsubscribe = onSnapshot(messagesQuery, snapshot => {
+      const c = convos.find(x => x.id === convoId);
+      if (!c) return;
+      c.messages = snapshot.docs.map(d => normalizeMessage({ id: d.id, ...d.data() }));
+      if (activeId === convoId) renderActiveConvoMessages();
+      else renderSidebar();
+    }, error => {
+      console.error('Message sync failed:', error);
+    });
+    messageUnsubs.set(convoId, unsubscribe);
+  }
+
+  function startFirestoreSync() {
+    const conversationsQuery = query(conversationsRef, orderBy('updatedAt', 'desc'), limit(100));
+    onSnapshot(conversationsQuery, snapshot => {
+      const nextIds = new Set();
+
+      snapshot.docs.forEach(d => {
+        const data = d.data();
+        const members = Array.isArray(data.members) ? data.members : [];
+        const isMember = members.length === 0 || members.some(member => sameName(member, username));
+        if (!isMember) return;
+
+        nextIds.add(d.id);
+        const existing = convos.find(c => c.id === d.id);
+        upsertLocalConvo({
+          id: d.id,
+          name: getConversationDisplayName(data),
+          type: data.type || 'dm',
+          members,
+          messages: existing ? existing.messages : []
+        });
+        subscribeMessages(d.id);
+      });
+
+      convos = convos.filter(c => nextIds.has(String(c.id)) || String(c.id).startsWith('local-'));
+      if (activeId && !convos.some(c => c.id === activeId)) activeId = null;
+      renderSidebar();
+    }, error => {
+      console.error('Conversation sync failed:', error);
+      renderSidebar();
+    });
+  }
+
+  async function findExistingFirestoreConversation(recipient) {
+    const wantedMembers = uniqueMembers([username, recipient]);
+    const snapshot = await getDocs(query(conversationsRef, orderBy('updatedAt', 'desc'), limit(100)));
+    return snapshot.docs.find(d => {
+      const data = d.data();
+      const members = Array.isArray(data.members) ? data.members : [];
+      return (data.type || 'dm') === 'dm'
+        && wantedMembers.length === members.length
+        && wantedMembers.every(wanted => members.some(member => sameName(member, wanted)));
+    });
+  }
+
+  async function saveConversationToFirestore(recipient, firstMessage) {
+    const members = uniqueMembers([username, recipient]);
+    const existing = await findExistingFirestoreConversation(recipient);
+    if (existing) {
+      if (firstMessage) await saveMessageToFirestore(existing.id, firstMessage);
+      return existing.id;
+    }
+
+    const convoDoc = doc(conversationsRef);
+    await setDoc(convoDoc, {
+      name: recipient,
+      type: 'dm',
+      members,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+
+    if (firstMessage) {
+      await addDoc(collection(db, 'conversations', convoDoc.id, 'messages'), {
+        text: firstMessage,
+        sender: username,
+        createdAt: serverTimestamp()
+      });
+      await updateDoc(convoDoc, { updatedAt: serverTimestamp() });
+    }
+
+    return convoDoc.id;
+  }
+
+  async function saveMessageToFirestore(convoId, text) {
+    const convoDoc = doc(db, 'conversations', String(convoId));
+    await addDoc(collection(db, 'conversations', String(convoId), 'messages'), {
+      text,
+      sender: username,
+      createdAt: serverTimestamp()
+    });
+    await updateDoc(convoDoc, {
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  function getInitials(name) {
+    return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2);
+  }
+
+  function getColor(name) {
+    let h = 0;
+    for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+    return COLORS[h % COLORS.length];
+  }
+
+  function renderSidebar() {
+    const list = document.getElementById('convoList');
+    const empty = document.getElementById('sidebarEmpty');
+    if (!list || !empty) return;
+    list.innerHTML = '';
+
+    if (convos.length === 0) {
+      empty.style.display = 'flex';
+      list.style.display = 'none';
+      return;
+    }
+    empty.style.display = 'none';
+    list.style.display = 'block';
+
+    convos.forEach(c => {
+      const col = getColor(c.name);
+      const lastMsg = c.messages && c.messages.length ? c.messages[c.messages.length - 1] : null;
+      const preview = lastMsg ? (lastMsg.mine ? 'You: ' + lastMsg.text : lastMsg.text) : 'No messages yet';
+      const div = document.createElement('div');
+      div.className = 'convo-item' + (c.id === activeId ? ' active' : '');
+      div.onclick = () => openConvo(c.id);
+      div.innerHTML = `
+        <div class="c-avatar" style="background:${col.bg};color:${col.fg};">${getInitials(c.name)}</div>
+        <div class="convo-info">
+          <div class="convo-name">${c.name}</div>
+          <div class="convo-preview">${preview}</div>
+        </div>`;
+      list.appendChild(div);
+    });
+  }
+
+  function openConvo(id) {
+    activeId = id;
+    const c = convos.find(x => x.id === id);
+    if (!c) return;
+    const col = getColor(c.name);
+
+    // header
+    const header = document.getElementById('chatHeader');
+    if (!header) return;
+    header.classList.add('visible');
+    const av = document.getElementById('headerAvatar');
+    if (!av) return;
+    av.textContent = getInitials(c.name);
+    av.style.background = col.bg;
+    av.style.color = col.fg;
+    const headerName = document.getElementById('headerName');
+    const headerStatus = document.getElementById('headerStatus');
+    if (headerName) headerName.textContent = c.name;
+    if (headerStatus) {
+      headerStatus.textContent = `Chatting as ${username}`;
+      headerStatus.style.color = 'var(--text3)';
+    }
+
+    // messages
+    const msgs = document.getElementById('messages');
+    if (!msgs) return;
+    msgs.classList.add('visible');
+    msgs.innerHTML = '';
+    c.messages.forEach(m => appendBubble(m.text, m.mine, c, false));
+    msgs.scrollTop = msgs.scrollHeight;
+
+    // input
+    const ia = document.getElementById('inputArea');
+    if (ia) ia.classList.add('visible');
+    const box = document.getElementById('inputBox');
+    if (box) {
+      box.setAttribute('data-placeholder', `Message ${c.name.split(' ')[0]}…`);
+      box.focus();
+    }
+
+    // hide empty state
+    const chatEmpty = document.getElementById('chatEmpty');
+    if (chatEmpty) chatEmpty.style.display = 'none';
+
+    renderSidebar();
+  }
+
+  function appendBubble(text, mine, convo, scroll = true) {
+    const msgs = document.getElementById('messages');
+    if (!msgs) return;
+    const col = getColor(convo.name);
+    const row = document.createElement('div');
+    row.className = 'msg-row' + (mine ? ' mine' : '');
+
+    if (!mine) {
+      row.innerHTML = `
+        <div class="msg-avatar-sm" style="background:${col.bg};color:${col.fg};">${getInitials(convo.name)}</div>
+        <div class="bubble theirs">${text.replace(/</g,'&lt;')}</div>`;
+    } else {
+      row.innerHTML = `
+        <div class="bubble mine">${text.replace(/</g,'&lt;')}</div>`;
+    }
+    msgs.appendChild(row);
+    if (scroll) msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function sendMessage() {
+    if (!activeId) return;
+    const box = document.getElementById('inputBox');
+    if (!box) return;
+    const text = box.innerText.trim();
+    if (!text) return;
+    const c = convos.find(x => x.id === activeId);
+    if (!c) return;
+    c.messages.push({ text, mine: true });
+    box.innerText = '';
+    appendBubble(text, true, c);
+    renderSidebar();
+    if (!String(activeId).startsWith('local-')) {
+      try {
+        await saveMessageToFirestore(activeId, text);
+      } catch (error) {
+        console.error('Message save failed:', error);
+      }
+    }
+  }
+
+  const inputBox = document.getElementById('inputBox');
+  if (inputBox) {
+    inputBox.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+  }
+
+  // Modal
+  function openModal() {
+    const modal = document.getElementById('modalOverlay');
+    if (modal) modal.classList.add('open');
+    setTimeout(() => {
+      const recipientInput = document.getElementById('recipientInput');
+      if (recipientInput) recipientInput.focus();
+    }, 50);
+  }
+  function closeModal() {
+    const modal = document.getElementById('modalOverlay');
+    const recipientInput = document.getElementById('recipientInput');
+    const firstMessageInput = document.getElementById('firstMessageInput');
+    if (modal) modal.classList.remove('open');
+    if (recipientInput) recipientInput.value = '';
+    if (firstMessageInput) firstMessageInput.value = '';
+  }
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  async function startChat() {
+    const recipientInput = document.getElementById('recipientInput');
+    const firstMessageInput = document.getElementById('firstMessageInput');
+    if (!recipientInput || !firstMessageInput) return;
+    const name = recipientInput.value.trim();
+    const msg = firstMessageInput.value.trim();
+    if (!name) { recipientInput.focus(); return; }
+
+    const existing = convos.find(c => c.name.toLowerCase() === name.toLowerCase());
+    if (existing) {
+      closeModal();
+      openConvo(existing.id);
+      if (msg) {
+        activeId = existing.id;
+        const box = document.getElementById('inputBox');
+        if (box) box.innerText = msg;
+        await sendMessage();
+      }
+      return;
+    }
+
+    let id = `local-${Date.now()}`;
+    let savedToFirestore = false;
+    try {
+      id = await saveConversationToFirestore(name, msg);
+      savedToFirestore = true;
+    } catch (error) {
+      console.error('Conversation save failed:', error);
+    }
+
+    const newConvo = upsertLocalConvo({ id, name, messages: [] });
+    if (msg && !savedToFirestore) newConvo.messages.push({ text: msg, mine: true, sender: username });
+    closeModal();
+    renderSidebar();
+    openConvo(id);
+  }
+
+  // Tab switching
+  function setTab(el, type) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function filterConvos() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+    const q = searchInput.value.toLowerCase();
+    document.querySelectorAll('.convo-item').forEach(item => {
+      const name = item.querySelector('.convo-name');
+      item.style.display = name && name.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  }
+
+  // Rail buttons
+  document.querySelectorAll('.rail-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.rail-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
+  // Init
+  updateCurrentUserUi();
+  renderSidebar();
+  startFirestoreSync();
+
+  Object.assign(window, {
+    closeModal,
+    closeModalOutside,
+    filterConvos,
+    openModal,
+    sendMessage,
+    setTab,
+    startChat
+  });
+</script>
+</body>
+</html>
